@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper为映射的根节点，namespace指定Mapper接口的完整类名,
+mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象-->
+<mapper namespace="com.mapper.ScoreMapper">
+    <select id="selectScore" resultType="com.entitle.Score" parameterType="java.util.HashMap">
+        SELECT sci.stu_id AS stu_id, sci.course_id AS course_id, stu_name, course_name, score
+        FROM score_info AS sci INNER JOIN student_info AS si
+        ON sci.stu_id = si.stu_id INNER JOIN course_info AS ci
+        ON sci.course_id = ci.course_id
+        <where>
+            <if test="null != stuId">
+                AND sci.stu_id = #{stuId}
+            </if>
+            <if test="null != courId">
+                AND sci.course_id = #{courId}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number}
+    </select>
+
+    <select id="selectScoreCount" resultType="int" parameterType="java.util.HashMap">
+
+        SELECT COUNT(*)
+        FROM score_info AS sci INNER JOIN student_info AS si
+        ON sci.stu_id = si.stu_id INNER JOIN course_info AS ci
+        ON sci.course_id = ci.course_id
+        <where>
+            <if test="null != stuId">
+                AND sci.stu_id = #{stuId}
+            </if>
+            <if test="null != courId">
+                AND sci.course_id = #{courId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertScore" parameterType="com.entitle.ScoreInfo">
+        INSERT INTO score_info
+        VALUES(#{stu_id}, #{course_id}, #{score})
+    </insert>
+
+
+    <select id="selectAllScoreCount" resultType="int">
+        SELECT COUNT(*)
+        FROM score_info;
+    </select>
+
+    <select id="selectAllScore" resultType="com.entitle.ScoreInfo" parameterType="java.util.HashMap">
+        SELECT *
+        FROM score_info
+        LIMIT #{start}, #{number};
+    </select>
+    <update id="updateScore" parameterType="com.entitle.ScoreInfo">
+        UPDATE score_info
+        SET score = #{score}
+        WHERE stu_id = #{stu_id} AND course_id = #{course_id}
+    </update>
+
+    <delete id="deleteScore" parameterType="java.util.HashMap">
+        DELETE FROM score_info
+        <where>
+            <if test="null != stu_id">
+                AND stu_id = #{stu_id}
+            </if>
+            <if test="null != course_id">
+                AND course_id = #{course_id}
+            </if>
+        </where>
+    </delete>
+
+    <select id="selectScoreByCondition" resultType="com.entitle.ScoreInfo" parameterType="java.util.HashMap">
+        select * from score_info
+        <where>
+            <if test="null != stu_id">
+                AND stu_id = #{stu_id}
+            </if>
+
+            <if test="null != course_id">
+                AND course_id = #{course_id}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number};
+    </select>
+
+    <select id="selectScoreByConditionCount" resultType="int" parameterType="java.util.HashMap">
+        select COUNT(*) from score_info
+        <where>
+            <if test="null != stu_id">
+                AND stu_id = #{stu_id}
+            </if>
+
+            <if test="null != course_id">
+                AND course_id = #{course_id}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectScoreByInterval" resultType="com.entitle.ScoreInfo" parameterType="java.util.HashMap">
+        select * from score_info
+        <where>
+            <if test="begin != null">
+                AND score >= #{begin}
+            </if>
+
+            <if test="end != null">
+                <![CDATA[ AND score < #{end} ]]>
+            </if>
+        </where>
+        LIMIT #{start} ,#{number};
+    </select>
+
+    <select id="selectScoreByIntervalCount" resultType="int" parameterType="java.util.HashMap">
+        select COUNT(*) from score_info
+        <where>
+            <if test="begin != null">
+                AND score >= #{begin}
+            </if>
+
+            <if test="end != null">
+
+                <![CDATA[ AND score < #{end} ]]>
+            </if>
+        </where>
+    </select>
+</mapper>

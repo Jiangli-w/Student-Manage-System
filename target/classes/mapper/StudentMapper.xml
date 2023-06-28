@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper为映射的根节点，namespace指定Mapper接口的完整类名,
+mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象-->
+<mapper namespace="com.mapper.StudentMapper">
+    <select id="selectStudent" resultType="com.entitle.Student" parameterType="java.util.HashMap">
+        select * from student_info
+        where stu_id = #{stuId}
+    </select>
+
+    <select id="selectStudents" resultType="com.entitle.Student" parameterType="java.util.HashMap">
+        SELECT *
+        FROM student_info
+        LIMIT #{start}, #{number};
+    </select>
+
+    <select id="selectStudentCount" resultType="int">
+        SELECT COUNT(*)
+        FROM student_info;
+    </select>
+
+    <update id="updateStudent" parameterType="com.entitle.Student">
+        UPDATE student_info
+        SET stu_name = #{stu_name}, stu_sex = #{stu_sex}, stu_birth = #{stu_birth}, stu_special = #{stu_special}, stu_class_id = #{stu_class_id}, stu_address = #{stu_address}, stu_phone = #{stu_phone}, stu_note = #{stu_note}
+        WHERE stu_id = #{stu_id};
+    </update>
+
+    <delete id="deleteStudent" parameterType="java.util.HashMap">
+        DELETE si, sci FROM student_info AS si LEFT JOIN score_info AS sci
+        ON si.stu_id = sci.stu_id
+        WHERE si.stu_id = #{stu_id};
+    </delete>
+
+    <select id="selectStudentsByCondition" resultType="com.entitle.Student" parameterType="java.util.HashMap">
+        select * from student_info
+        <where>
+            <if test="null != stu_id">
+                AND stu_id = #{stu_id}
+            </if>
+
+            <if test="null != stu_name">
+                AND stu_name = #{stu_name}
+            </if>
+
+            <if test="null != stu_special">
+                AND stu_special = #{stu_special}
+            </if>
+
+            <if test="null != stu_class_id">
+                AND stu_class_id = #{stu_class_id}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number};
+    </select>
+
+    <select id="selectStudentsByConditionCount" resultType="int" parameterType="java.util.HashMap">
+        select COUNT(*) from student_info
+        <where>
+            <if test="null != stu_id">
+                AND stu_id = #{stu_id}
+            </if>
+
+            <if test="null != stu_name">
+                AND stu_name = #{stu_name}
+            </if>
+
+            <if test="null != stu_special">
+                AND stu_special = #{stu_special}
+            </if>
+
+            <if test="null != stu_class_id">
+                AND stu_class_id = #{stu_class_id}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertStudent" parameterType="com.entitle.Student">
+        INSERT INTO student_info
+        VALUES(#{stu_id}, #{stu_name}, #{stu_sex}, #{stu_birth}, #{stu_special}, #{stu_class_id}, #{stu_address}, #{stu_phone}, #{stu_note})
+    </insert>
+</mapper>

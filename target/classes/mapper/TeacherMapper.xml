@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper为映射的根节点，namespace指定Mapper接口的完整类名,
+mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象-->
+<mapper namespace="com.mapper.TeacherMapper">
+    <select id="selectTeacher" resultType="com.entitle.Teacher" parameterType="java.util.HashMap">
+        select * from teacher_info
+        where tc_id = #{tcId}
+    </select>
+
+
+    <select id="selectTeacherCount" resultType="int">
+        SELECT COUNT(*)
+        FROM teacher_info
+        <where>
+            <if test="null != tc_id">
+                AND tc_id = #{tc_id}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTeachers" resultType="com.entitle.Teacher" parameterType="java.util.HashMap">
+        SELECT *
+        FROM teacher_info
+        LIMIT #{start}, #{number};
+    </select>
+    <update id="updateTeacher" parameterType="com.entitle.Teacher">
+        UPDATE teacher_info
+        SET tc_name = #{tc_name}, tc_sex = #{tc_sex}, tc_birth = #{tc_birth}, tc_depart = #{tc_depart}, tc_phone = #{tc_phone}
+        WHERE tc_id = #{tc_id}
+    </update>
+
+    <delete id="deleteTeacher" parameterType="java.util.HashMap">
+        DELETE ti, cti  FROM teacher_info AS ti LEFT JOIN course_table_info AS cti
+        ON ti.tc_id = cti.teacher_id
+        WHERE ti.tc_id = #{tc_id};
+    </delete>
+
+    <insert id="insertTeacher" parameterType="com.entitle.Teacher">
+        INSERT INTO teacher_info
+        VALUES(#{tc_id}, #{tc_name}, #{tc_sex}, #{tc_birth}, #{tc_depart}, #{tc_phone})
+    </insert>
+</mapper>

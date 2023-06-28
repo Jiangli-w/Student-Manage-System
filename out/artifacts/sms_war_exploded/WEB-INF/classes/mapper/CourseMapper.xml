@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper为映射的根节点，namespace指定Mapper接口的完整类名,
+mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象-->
+<mapper namespace="com.mapper.CourseMapper">
+    <select id="selectCourses" resultType="com.entitle.Course" parameterType="java.util.HashMap">
+        SELECT DISTINCT ci.*
+        FROM course_table_info AS cti INNER JOIN course_info AS ci
+        ON cti.course_id = ci.course_id
+        <where>
+            <if test="null != classId">
+                AND cti.class_id = #{classId}
+            </if>
+            <if test="null != tcId">
+                AND cti.teacher_id = #{tcId}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number};
+
+    </select>
+
+    <select id="selectCoursesCount" resultType="int" parameterType="java.util.HashMap">
+        SELECT COUNT(DISTINCT ci.course_id)
+        FROM course_table_info AS cti INNER JOIN course_info AS ci
+        ON cti.course_id = ci.course_id
+        <where>
+            <if test="null != classId">
+                AND cti.class_id = #{classId}
+            </if>
+            <if test="null != tcId">
+                AND cti.teacher_id = #{tcId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllCourseCount" resultType="int">
+        SELECT COUNT(*)
+        FROM course_info;
+    </select>
+
+    <select id="selectAllCourses" resultType="com.entitle.Course" parameterType="java.util.HashMap">
+        SELECT *
+        FROM course_info
+        LIMIT #{start}, #{number};
+    </select>
+
+    <update id="updateCourse" parameterType="com.entitle.Course">
+        UPDATE course_info
+        SET course_name = #{course_name}, course_hours = #{course_hours}, course_credit = #{course_credit}
+        WHERE course_id = #{course_id}
+    </update>
+
+    <delete id="deleteCourse" parameterType="java.util.HashMap">
+        DELETE ci, cti, score_info  FROM course_info AS ci LEFT JOIN course_table_info AS cti
+        ON ci.course_id = cti.course_id
+        LEFT JOIN score_info
+        ON score_info.course_id = ci.course_id
+        WHERE ci.course_id = #{course_id};
+    </delete>
+
+    <select id="selectCourseByCondition" resultType="com.entitle.Course" parameterType="java.util.HashMap">
+        select * from course_info
+        <where>
+            <if test="null != course_id">
+                AND course_id = #{course_id}
+            </if>
+
+            <if test="null != course_name">
+                AND course_name = #{course_name}
+            </if>
+
+        </where>
+        LIMIT #{start} ,#{number};
+    </select>
+
+    <select id="selectCourseByConditionCount" resultType="int" parameterType="java.util.HashMap">
+        select COUNT(*) from course_info
+        <where>
+            <if test="null != course_id">
+                AND course_id = #{course_id}
+            </if>
+
+            <if test="null != course_name">
+                AND course_name = #{course_name}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertCourse" parameterType="com.entitle.Course">
+        INSERT INTO course_info
+        VALUES(#{course_id}, #{course_name}, #{course_hours}, #{course_credit})
+    </insert>
+</mapper>

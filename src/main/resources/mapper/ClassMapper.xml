@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper为映射的根节点，namespace指定Mapper接口的完整类名,
+mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象-->
+<mapper namespace="com.mapper.ClassMapper">
+    <select id="selectClass" resultType="com.entitle.ClassInfo" parameterType="java.util.HashMap">
+        select * from class_info
+        where class_id = #{classId}
+    </select>
+
+    <select id="selectClasses" resultType="com.entitle.ClassInfo" parameterType="java.util.HashMap">
+        SELECT *
+        FROM class_info
+        LIMIT #{start}, #{number};
+    </select>
+
+    <select id="selectClassCount" resultType="int">
+        SELECT COUNT(*)
+        FROM class_info;
+    </select>
+
+    <update id="updateClass" parameterType="com.entitle.ClassInfo">
+        UPDATE class_info
+        SET class_name = #{class_name}, class_special = #{class_special}, class_number = #{class_number}, class_year = #{class_year}, class_instructor = #{class_instructor}
+        WHERE class_id = #{class_id};
+    </update>
+
+    <delete id="deleteClass" parameterType="java.util.HashMap">
+        DELETE ci, si, score_info FROM class_info AS ci LEFT JOIN student_info AS si
+        ON ci.class_id = si.stu_class_id
+        LEFT JOIN score_info
+        ON score_info.stu_id = si.stu_id
+        WHERE class_id = #{class_id};
+    </delete>
+
+    <select id="selectClassesByConditionCount" resultType="int" parameterType="java.util.HashMap">
+        select COUNT(*) from class_info
+        <where>
+            <if test="null != class_name">
+                AND class_name = #{class_name}
+            </if>
+
+            <if test="null != class_special">
+                AND class_special = #{class_special}
+            </if>
+
+            <if test="null != class_year">
+                AND class_year = #{class_year}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectClassesByCondition" resultType="com.entitle.ClassInfo" parameterType="java.util.HashMap">
+        select * from class_info
+        <where>
+            <if test="null != class_name">
+                AND class_name = #{class_name}
+            </if>
+
+            <if test="null != class_special">
+                AND class_special = #{class_special}
+            </if>
+
+            <if test="null != class_year">
+                AND class_year = #{class_year}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number};
+    </select>
+
+    <insert id="insertClass" parameterType="com.entitle.ClassInfo">
+        INSERT INTO class_info
+        VALUES(#{class_id}, #{class_name}, #{class_special}, #{class_number}, #{class_year}, #{class_instructor} )
+    </insert>
+</mapper>

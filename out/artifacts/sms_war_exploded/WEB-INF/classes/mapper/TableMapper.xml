@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper为映射的根节点，namespace指定Mapper接口的完整类名,
+mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象-->
+<mapper namespace="com.mapper.TableMapper">
+    <select id="selectTable" resultType="com.entitle.Table" parameterType="java.util.HashMap">
+        SELECT ct_id, cti.course_id AS course_id, course_name, class_id, tc_name, time, place, course_hours
+        FROM course_table_info AS cti LEFT JOIN course_info AS ci
+        ON cti.course_id = ci.course_id
+        LEFT JOIN teacher_info AS ti
+        ON cti.teacher_id = ti.tc_id
+        <where>
+            <if test="null != classId">
+                and cti.class_id = #{classId}
+            </if>
+            <if test="null != tcId">
+                and ti.tc_id=#{tcId}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number}
+    </select>
+
+    <select id="selectTableCount" resultType="int" parameterType="java.util.HashMap">
+        SELECT COUNT(ct_id)
+        FROM course_table_info AS cti LEFT JOIN course_info AS ci
+        ON cti.course_id = ci.course_id
+        LEFT JOIN teacher_info AS ti
+            ON cti.teacher_id = ti.tc_id
+        <where>
+            <if test="null != classId">
+                and cti.class_id = #{classId}
+            </if>
+            <if test="null != tcId">
+                and ti.tc_id=#{tcId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectCourseTableCount" resultType="int">
+        SELECT COUNT(*)
+        FROM course_table_info;
+    </select>
+
+    <select id="selectCourseTable" resultType="com.entitle.CourseTable" parameterType="java.util.HashMap">
+        SELECT *
+        FROM course_table_info
+        LIMIT #{start}, #{number};
+    </select>
+
+    <update id="updateCourseTable" parameterType="com.entitle.CourseTable">
+        UPDATE course_table_info
+        SET course_id = #{course_id}, class_id = #{class_id}, teacher_id = #{teacher_id}, time = #{time}, place = #{place}
+        WHERE ct_id = #{ct_id}
+    </update>
+
+    <delete id="deleteCourseTable" parameterType="java.util.HashMap">
+        DELETE FROM course_table_info
+        WHERE ct_id = #{ct_id}
+    </delete>
+
+
+    <select id="selectCourseTableByCondition" resultType="com.entitle.CourseTable" parameterType="java.util.HashMap">
+        select cti.*
+        FROM course_table_info AS cti INNER JOIN course_info AS ci
+        ON cti.course_id = ci.course_id
+        <where>
+            <if test="null != course_name">
+                AND ci.course_name = #{course_name}
+            </if>
+            <if test="null != course_id">
+                AND cti.course_id = #{course_id}
+            </if>
+
+            <if test="null != teacher_id">
+                AND cti.teacher_id = #{teacher_id}
+            </if>
+
+            <if test="null != time">
+                AND cti.time = #{time}
+            </if>
+        </where>
+        LIMIT #{start} ,#{number};
+    </select>
+
+    <select id="selectCourseTableByConditionCount" resultType="int" parameterType="java.util.HashMap">
+        select COUNT(*)
+        FROM course_table_info AS cti INNER JOIN course_info AS ci
+        ON cti.course_id = ci.course_id
+        <where>
+            <if test="null != course_name">
+                AND ci.course_name = #{course_name}
+            </if>
+            <if test="null != course_id">
+                AND cti.course_id = #{course_id}
+            </if>
+
+            <if test="null != teacher_id">
+                AND cti.teacher_id = #{teacher_id}
+            </if>
+
+            <if test="null != time">
+                AND cti.time = #{time}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertCourseTable" parameterType="com.entitle.CourseTable">
+        INSERT INTO course_table_info
+        VALUES(#{ct_id}, #{course_id}, #{class_id}, #{teacher_id}, #{time}, #{place} )
+    </insert>
+</mapper>
